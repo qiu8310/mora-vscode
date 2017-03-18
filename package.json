@@ -1,7 +1,7 @@
 {
   "name": "mora-vscode",
   "displayName": "mora-vscode",
-  "description": "For my own use",
+  "description": "vscode extension for myself use only",
   "version": "0.0.1",
   "publisher": "mora-vscode",
   "engines": {
@@ -14,34 +14,92 @@
     "onLanguage:markdown",
     "onCommand:extension.createReactPureComponent",
     "onCommand:extension.createReactListComponent",
+    "onCommand:extension.createReactComponentStyle",
     "onCommand:extension.sayHello"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
-      {"command": "extension.createReactPureComponent", "title": "Create React Pure Component"},
-      {"command": "extension.createReactListComponent", "title": "Create React List Component"},
-      {"command": "extension.sayHello", "title": "Hello World"}
+      {
+        "command": "extension.createReactPureComponent",
+        "title": "Create React Pure Component"
+      },
+      {
+        "command": "extension.createReactListComponent",
+        "title": "Create React List Component"
+      },
+      {
+        "command": "extension.createReactComponentStyle",
+        "title": "Create React Component Style"
+      },
+      {
+        "command": "extension.sayHello",
+        "title": "Hello World"
+      }
     ],
-    "keybindings":[
-      {"command": "extension.createReactPureComponent", "key": "cmd+k cmd+p"},
-      {"command": "extension.createReactListComponent", "key": "cmd+k cmd+l"}
+    "keybindings": [
+      {
+        "command": "extension.createReactPureComponent",
+        "key": "cmd+k cmd+p"
+      },
+      {
+        "command": "extension.createReactListComponent",
+        "key": "cmd+k cmd+l"
+      },
+      {
+        "command": "extension.createReactComponentStyle",
+        "key": "cmd+k cmd+s"
+      }
     ],
     "snippets": [
-      {"path": "./snippets/MyJavascript.json", "language": "javascript"},
-      {"path": "./snippets/MyJavascript.json", "language": "typescript"},
-      {"path": "./snippets/MyJavascript.json", "language": "javascriptreact"},
-      {"path": "./snippets/MyJavascript.json", "language": "typescriptreact"},
-
-      {"path": "./snippets/ReactSnippets.json", "language": "javascript"},
-      {"path": "./snippets/ReactSnippets.json", "language": "typescript"},
-      {"path": "./snippets/ReactSnippets.json", "language": "javascriptreact"},
-      {"path": "./snippets/ReactSnippets.json", "language": "typescriptreact"},
-
-      {"path": "./snippets/JavaScriptSnippets.json", "language": "javascript"},
-      {"path": "./snippets/JavaScriptSnippets.json", "language": "typescript"},
-      {"path": "./snippets/JavaScriptSnippets.json", "language": "javascriptreact"},
-      {"path": "./snippets/JavaScriptSnippets.json", "language": "typescriptreact"}
+      {
+        "path": "./snippets/MyJavascript.json",
+        "language": "javascript"
+      },
+      {
+        "path": "./snippets/MyJavascript.json",
+        "language": "typescript"
+      },
+      {
+        "path": "./snippets/MyJavascript.json",
+        "language": "javascriptreact"
+      },
+      {
+        "path": "./snippets/MyJavascript.json",
+        "language": "typescriptreact"
+      },
+      {
+        "path": "./snippets/ReactSnippets.json",
+        "language": "javascript"
+      },
+      {
+        "path": "./snippets/ReactSnippets.json",
+        "language": "typescript"
+      },
+      {
+        "path": "./snippets/ReactSnippets.json",
+        "language": "javascriptreact"
+      },
+      {
+        "path": "./snippets/ReactSnippets.json",
+        "language": "typescriptreact"
+      },
+      {
+        "path": "./snippets/JavaScriptSnippets.json",
+        "language": "javascript"
+      },
+      {
+        "path": "./snippets/JavaScriptSnippets.json",
+        "language": "typescript"
+      },
+      {
+        "path": "./snippets/JavaScriptSnippets.json",
+        "language": "javascriptreact"
+      },
+      {
+        "path": "./snippets/JavaScriptSnippets.json",
+        "language": "typescriptreact"
+      }
     ]
   },
   "scripts": {
@@ -51,11 +109,14 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
+    "@types/fs-extra": "2.0.0",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
     "mocha": "^2.3.3",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "fs-extra": "2.1.2"
+  }
 }

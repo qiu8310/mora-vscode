@@ -36,6 +36,6 @@ export default class $moduleName extends ListComponent {
 }
 `
 
-export const REACT_COMPONENT_STYLE = `.$moduleName {
+export const REACT_COMPONENT_STYLE = `.$rootClassName {
   \${1}
 }`

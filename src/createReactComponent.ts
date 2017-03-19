@@ -19,21 +19,44 @@ export function createReactListComponent() {
 
 function createReactComponent(tpl) {
   const envData = getEnvData()
-  const {moduleDirName} = envData
+  const {moduleDirName, moduleExtension} = envData
 
   if (isRunnable()) {
-    let content = window.activeTextEditor.document.getText()
+    let editor = window.activeTextEditor
+    let content = editor.document.getText()
     if (content) {
-      window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径，无输入则在当前文件创建）'})
-        .then(input => {
-          if (!input) {
-            insertSnippet(tpl, envData)
-          } else {
-            let newFile = path.resolve(moduleDirName, input)
-            fs.ensureFileSync(newFile)
-            openFile(newFile, () => insertSnippet(tpl, getEnvData()))
+      let {start, end} = editor.selection
+      let created
+      let createFile = (filepath) => {
+        created = true
+        if (!filepath) {
+          insertSnippet(tpl, envData)
+        } else {
+          let newFile = path.resolve(moduleDirName, filepath)
+          fs.ensureFileSync(newFile)
+          openFile(newFile, () => insertSnippet(tpl, getEnvData()))
+        }
+      }
+
+      // 当前光标所在的行上引用了一个不存在的文件
+      for (let lineNumber = start.line; lineNumber <= end.line; lineNumber++) {
+        let lineText = editor.document.lineAt(lineNumber).text
+        // 识别『 import Test from './Test' 』 和  『 const Test = require('./Test') 』
+        if ( /^\s*import\s+.*?\s+from\s+'([^\)]+)'/.test(lineText) || /require\('([^\)]+)'\)/.test(lineText)) {
+          let filepath = RegExp.$1
+          // 必须是相对路径，并且文件不存在
+          if (filepath[0] === '.' && !fs.existsSync(path.resolve(moduleDirName, filepath))) {
+            if (!(/\.\w+$/.test(filepath))) filepath += moduleExtension
+            createFile(filepath)
+            break
           }
-        })
+        }
+      }
+
+      // 没有找到一个可以创建的文件，则提示用户输入文件路径
+      if (!created) {
+        window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径，无输入则在当前文件创建）'}).then(createFile)
+      }
     } else {
       insertSnippet(tpl, envData)
     }
@@ -121,11 +144,12 @@ function getEnvData() {
   let parts = (rootPath ? fileName.replace(rootPath, '') : fileName).split(/\\|\//).filter(part => !!part)
 
   let moduleDirName = path.dirname(fileName)
+  let moduleExtension = path.extname(fileName)
   let moduleName = parts.pop().split('.').shift()
   let prefixFolder = parts.reverse().find(folder => PREFIXABLE_FOLDERS.indexOf(folder) >= 0) || ''
   let rootClassName = (prefixFolder ? prefixFolder[0] : '') + moduleName
 
-  return {moduleDirName, moduleName, rootClassName}
+  return {moduleDirName, moduleName, moduleExtension, rootClassName}
 }
 
 function insertSnippet(tpl, envData, pos?: vscode.Position) {

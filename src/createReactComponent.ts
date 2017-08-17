@@ -3,7 +3,10 @@ import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as os from 'os'
 
-import {REACT_PURE_COMPONENT, REACT_LIST_COMPONENT, REACT_COMPONENT_STYLE} from './snippets'
+import {
+  REACT_PURE_COMPONENT, REACT_LIST_COMPONENT, REACT_COMPONENT_STYLE,
+  REACT_PURE_PAGE_COMPONENT, REACT_PURE_ADMIN_PAGE_COMPONENT, REACT_LIST_PAGE_COMPONENT
+} from './snippets'
 
 const {window, workspace, Position} = vscode
 const PREFIXABLE_FOLDERS = ['uis', 'pages', 'widgets', 'layouts', 'components']
@@ -11,14 +14,17 @@ const DEFAULT_STYLE_FOLDER = 'styles'
 const DEFAULT_STYLE_EXTENSION = '.scss'
 
 export function createReactPureComponent() {
-  createReactComponent(REACT_PURE_COMPONENT)
+  const envData = getEnvData()
+  const {prefixFolder, isAdmin} = envData
+  createReactComponent(prefixFolder === 'pages' ? isAdmin ?  REACT_PURE_ADMIN_PAGE_COMPONENT : REACT_PURE_PAGE_COMPONENT : REACT_PURE_COMPONENT, envData)
 }
 export function createReactListComponent() {
-  createReactComponent(REACT_LIST_COMPONENT)
+  const envData = getEnvData()
+  const {prefixFolder} = envData
+  createReactComponent(prefixFolder === 'pages' ?  REACT_LIST_PAGE_COMPONENT : REACT_LIST_COMPONENT, envData)
 }
 
-function createReactComponent(tpl) {
-  const envData = getEnvData()
+function createReactComponent(tpl, envData) {
   const {moduleDirName, moduleExtension} = envData
 
   if (isRunnable()) {
@@ -143,13 +149,14 @@ function getEnvData() {
 
   let parts = (rootPath ? fileName.replace(rootPath, '') : fileName).split(/\\|\//).filter(part => !!part)
 
+  let isAdmin = parts.indexOf('admin') > 0
   let moduleDirName = path.dirname(fileName)
   let moduleExtension = path.extname(fileName)
   let moduleName = parts.pop().split('.').shift()
   let prefixFolder = parts.reverse().find(folder => PREFIXABLE_FOLDERS.indexOf(folder) >= 0) || ''
   let rootClassName = (prefixFolder ? prefixFolder[0] : '') + moduleName
 
-  return {moduleDirName, moduleName, moduleExtension, rootClassName}
+  return {moduleDirName, moduleName, moduleExtension, rootClassName, prefixFolder, isAdmin}
 }
 
 function insertSnippet(tpl, envData, pos?: vscode.Position) {

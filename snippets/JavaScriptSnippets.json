@@ -1,46 +1,46 @@
 {
   "import": {
-    "prefix": "imp",
+    "prefix": "ipt",
     "body": "import ${2:moduleName} from '${1:module}'$0",
     "description": "Imports entire module statement in ES6 syntax"
   },
   "importNoModuleName": {
-    "prefix": "imn",
+    "prefix": "ipm",
     "body": "import '${1:module}'$0",
     "description": "Imports entire module in ES6 syntax without module name"
   },
   "importDestructing": {
-    "prefix": "imd",
+    "prefix": "ipd",
     "body": "import {$2} from '${1:module}'$0",
     "description": "Imports only a portion of the module in ES6 syntax"
   },
   "importEverything": {
-    "prefix": "ime",
+    "prefix": "ipe",
     "body": "import * as ${2:alias} from '${1:module}'$0",
     "description": "Imports everything as alias from the module in ES6 syntax"
   },
   "importAs": {
-    "prefix": "ima",
+    "prefix": "ipa",
     "body": "import {${2:originalName} as ${3:alias}} from '${1:module}'$0",
     "description": "Imports a specific portion of the module by assigning a local alias in ES6 syntax"
   },
-  "exportNamedFunction": {
-    "prefix": "enf",
-    "body": "export const ${1:functionName} = (${2:params}) =>  {\n\t$0\n}\n",
-    "description": "Export named function in ES6 syntax"
-  },
   "exportDefaultFunction": {
-    "prefix": "edf",
+    "prefix": "epf",
     "body": "export default (${1:params}) =>  {\n\t$0\n}\n",
     "description": "Export default function in ES6 syntax"
   },
+  "exportNamedFunction": {
+    "prefix": "epnf",
+    "body": "export const ${1:functionName} = (${2:params}) =>  {\n\t$0\n}\n",
+    "description": "Export named function in ES6 syntax"
+  },
   "exportClass": {
-    "prefix": "ecl",
+    "prefix": "epc",
     "body": "export default class ${1:className} {\n\t$0\n}\n",
     "description": "Export default class in ES6 syntax"
   },
   "exportClassExtends": {
-    "prefix": "ece",
+    "prefix": "epce",
     "body": "export default class ${1:className} extends ${2:baseclassName} {\n\t$0\n}\n",
     "description": "Export default class which extends a base one in ES6 syntax"
   },

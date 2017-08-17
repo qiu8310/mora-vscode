@@ -116,142 +116,142 @@
   },
   "propTypeArray": {
     "prefix": "pta",
-    "body": "React.PropTypes.array,",
+    "body": "PropTypes.array,",
     "description": "Array prop type"
   },
   "propTypeArrayRequired": {
     "prefix": "ptar",
-    "body": "React.PropTypes.array.isRequired,",
+    "body": "PropTypes.array.isRequired,",
     "description": "Array prop type required"
   },
   "propTypeBool": {
     "prefix": "ptb",
-    "body": "React.PropTypes.bool,",
+    "body": "PropTypes.bool,",
     "description": "Bool prop type"
   },
   "propTypeBoolRequired": {
     "prefix": "ptbr",
-    "body": "React.PropTypes.bool.isRequired,",
+    "body": "PropTypes.bool.isRequired,",
     "description": "Bool prop type required"
   },
   "propTypeFunc": {
     "prefix": "ptf",
-    "body": "React.PropTypes.func,",
+    "body": "PropTypes.func,",
     "description": "Func prop type"
   },
   "propTypeFuncRequired": {
     "prefix": "ptfr",
-    "body": "React.PropTypes.func.isRequired,",
+    "body": "PropTypes.func.isRequired,",
     "description": "Func prop type required"
   },
   "propTypeNumber": {
     "prefix": "ptn",
-    "body": "React.PropTypes.number,",
+    "body": "PropTypes.number,",
     "description": "Number prop type"
   },
   "propTypeNumberRequired": {
     "prefix": "ptnr",
-    "body": "React.PropTypes.number.isRequired,",
+    "body": "PropTypes.number.isRequired,",
     "description": "Number prop type required"
   },
   "propTypeObject": {
     "prefix": "pto",
-    "body": "React.PropTypes.object,",
+    "body": "PropTypes.object,",
     "description": "Object prop type"
   },
   "propTypeObjectRequired": {
     "prefix": "ptor",
-    "body": "React.PropTypes.object.isRequired,",
+    "body": "PropTypes.object.isRequired,",
     "description": "Object prop type required"
   },
   "propTypeString": {
     "prefix": "pts",
-    "body": "React.PropTypes.string,",
+    "body": "PropTypes.string,",
     "description": "String prop type"
   },
   "propTypeStringRequired": {
     "prefix": "ptsr",
-    "body": "React.PropTypes.string.isRequired,",
+    "body": "PropTypes.string.isRequired,",
     "description": "String prop type required"
   },
   "propTypeNode": {
     "prefix": "ptnd",
-    "body": "React.PropTypes.node,",
+    "body": "PropTypes.node,",
     "description": "Anything that can be rendered: numbers, strings, elements or an array"
   },
   "propTypeNodeRequired": {
     "prefix": "ptndr",
-    "body": "React.PropTypes.node.isRequired,",
+    "body": "PropTypes.node.isRequired,",
     "description": "Anything that can be rendered: numbers, strings, elements or an array required"
   },
   "propTypeElement": {
     "prefix": "ptel",
-    "body": "React.PropTypes.element,",
+    "body": "PropTypes.element,",
     "description": "React element prop type"
   },
   "propTypeElementRequired": {
     "prefix": "ptelr",
-    "body": "React.PropTypes.element.isRequired,",
+    "body": "PropTypes.element.isRequired,",
     "description": "React element prop type required"
   },
   "propTypeInstanceOf": {
     "prefix": "pti",
-    "body": "React.PropTypes.instanceOf($0),",
+    "body": "PropTypes.instanceOf($0),",
     "description": "Is an instance of a class prop type"
   },
   "propTypeInstanceOfRequired": {
     "prefix": "ptir",
-    "body": "React.PropTypes.instanceOf($0).isRequired,",
+    "body": "PropTypes.instanceOf($0).isRequired,",
     "description": "Is an instance of a class prop type required"
   },
   "propTypeEnum": {
     "prefix": "pte",
-    "body": "React.PropTypes.oneOf(['$0']),",
+    "body": "PropTypes.oneOf(['$0']),",
     "description": "Prop type limited to specific values by treating it as an enum"
   },
   "propTypeEnumRequired": {
     "prefix": "pter",
-    "body": "React.PropTypes.oneOf(['$0']).isRequired,",
+    "body": "PropTypes.oneOf(['$0']).isRequired,",
     "description": "Prop type limited to specific values by treating it as an enum required"
   },
   "propTypeOneOfType": {
     "prefix": "ptof",
-    "body": "React.PropTypes.oneOfType([\n\t$0\n]),",
+    "body": "PropTypes.oneOfType([\n\t$0\n]),",
     "description": "An object that could be one of many types"
   },
   "propTypeOneOfTypeRequired": {
     "prefix": "ptofr",
-    "body": "React.PropTypes.oneOfType([\n\t$0\n]).isRequired,",
+    "body": "PropTypes.oneOfType([\n\t$0\n]).isRequired,",
     "description": "An object that could be one of many types required"
   },
   "propTypeArrayOf": {
     "prefix": "ptao",
-    "body": "React.PropTypes.arrayOf($0),",
+    "body": "PropTypes.arrayOf($0),",
     "description": "An array of a certain type"
   },
   "propTypeArrayOfRequired": {
     "prefix": "ptaor",
-    "body": "React.PropTypes.arrayOf($0).isRequired,",
+    "body": "PropTypes.arrayOf($0).isRequired,",
     "description": "An array of a certain type required"
   },
   "propTypeObjectOf": {
     "prefix": "ptoo",
-    "body": "React.PropTypes.objectOf($0),",
+    "body": "PropTypes.objectOf($0),",
     "description": "An object with property values of a certain type"
   },
   "propTypeObjectOfRequired": {
     "prefix": "ptoor",
-    "body": "React.PropTypes.objectOf($0).isRequired,",
+    "body": "PropTypes.objectOf($0).isRequired,",
     "description": "An object with property values of a certain type required"
   },
   "propTypeShape": {
     "prefix": "ptsh",
-    "body": "React.PropTypes.shape({\n\t$0\n}),",
+    "body": "PropTypes.shape({\n\t$0\n}),",
     "description": "An object taking on a particular shape"
   },
   "propTypeShapeRequired": {
     "prefix": "ptshr",
-    "body": "React.PropTypes.shape({\n\t$0\n}).isRequired,",
+    "body": "PropTypes.shape({\n\t$0\n}).isRequired,",
     "description": "An object taking on a particular shape required"
   }
 }

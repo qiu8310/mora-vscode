@@ -37,33 +37,45 @@ export class ClassCompletion implements CompletionItemProvider {
         return []
     }
 
-    let styles = [...this.getGlobalStyles(), ...this.getCurrentStyels(document.getText())]
+    let items = [
+      ...this.getCompletionItems(this.getCurrentStyels(document.getText(), document.fileName), 'aaa_'),
+      ...this.getCompletionItems(this.getGlobalStyles(), 'aab_')
+    ]
+
 
     // 去除已经存在的 classes
     let classesOnAttribute = rawClasses[1].split(' ')
     if (classesOnAttribute.length) {
-      styles = styles.filter(cls => classesOnAttribute.indexOf(cls) < 0)
+      items = items.filter(it => classesOnAttribute.indexOf(it.label) < 0)
     }
 
     // 去重
     let cache = {}
-    styles = styles.filter(s => {
-      if (cache[s]) return false
-      cache[s] = true
+    items = items.filter(s => {
+      if (cache[s.label]) return false
+      cache[s.label] = true
       return true
     })
 
-    return styles.map(s => new CompletionItem(s.substr(1), CompletionItemKind.Variable))
+    return items
+  }
+
+  getCompletionItems(styles: string[], sortText: string): CompletionItem[] {
+    return styles.map(s => {
+      let i = new CompletionItem(s.substr(1), CompletionItemKind.Variable)
+      i.sortText = sortText
+      return i
+    })
   }
 
   getGlobalStyles() {
     return this.getStylesFromFiles(this.config.globalStyleFiles)
   }
 
-  getCurrentStyels(content: string) {
+  getCurrentStyels(content: string, fileName: string) {
     let styleFiles = []
     content.replace(styleFileRegExp, (r, r1, r2, index) => {
-      styleFiles.push(r1 || r2)
+      styleFiles.push(path.resolve(path.dirname(fileName), r1 || r2))
       return r
     })
     return this.getStylesFromFiles(styleFiles)

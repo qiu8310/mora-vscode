@@ -11,14 +11,27 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact",
     "onCommand:extension.createReactPureComponent",
     "onCommand:extension.createReactListComponent",
-    "onCommand:extension.createReactComponentStyle",
-    "onCommand:extension.sayHello"
+    "onCommand:extension.createReactComponentStyle"
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "configuration": {
+      "title": "mora-vscode",
+      "properties": {
+        "mora-vscode.globalStyleFiles": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "global style files, used for auto completion"
+        }
+      }
+    },
     "commands": [
       {
         "command": "extension.createReactPureComponent",

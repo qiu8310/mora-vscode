@@ -42,7 +42,11 @@ export const REACT_PURE_COMPONENT = `import * as React from 'react'
 
 // import './styles/$moduleName.scss'
 
-export default class $moduleName extends React.PureComponent<any, any> {
+export interface I\${moduleName}Props {
+
+}
+
+export default class $moduleName extends React.PureComponent<I\${moduleName}Props, any> {
   static defaultProps = {}
 
   render() {

@@ -1,9 +1,9 @@
 'use strict'
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+
 import * as vscode from 'vscode'
-import {WordCounter, WordCounterController} from './WordCounter'
+// import {WordCounter, WordCounterController} from './WordCounter'
 import {createReactListComponent, createReactPureComponent, createReactComponentStyle} from './createReactComponent'
+import {ClassCompletion} from './ClassCompletion'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -13,13 +13,18 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "mora-vscode" is now active!')
 
+  let cc = new ClassCompletion()
+  let classTriggerChars = ['"', '\'', ' ']
+
   // Add to a list of disposables which are disposed when this extension is deactivated.
   context.subscriptions.push(
-    new WordCounterController(new WordCounter()),
+    // new WordCounterController(new WordCounter()),
+    // vscode.commands.registerCommand('extension.sayHello', () => vscode.window.showInformationMessage('Hello World!')),
+    vscode.languages.registerCompletionItemProvider('typescriptreact', cc, ...classTriggerChars),
+    vscode.languages.registerCompletionItemProvider('javascriptreact', cc, ...classTriggerChars),
     vscode.commands.registerCommand('extension.createReactListComponent', createReactListComponent),
     vscode.commands.registerCommand('extension.createReactPureComponent', createReactPureComponent),
-    vscode.commands.registerCommand('extension.createReactComponentStyle', createReactComponentStyle),
-    vscode.commands.registerCommand('extension.sayHello', () => vscode.window.showInformationMessage('Hello World!'))
+    vscode.commands.registerCommand('extension.createReactComponentStyle', createReactComponentStyle)
   )
 }
 

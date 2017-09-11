@@ -1,18 +1,18 @@
 {
   "className": {
-    "prefix": "_cln",
+    "prefix": "cln",
     "body": "className",
     "description": "className abbr"
   },
 
   "className attribute": {
-    "prefix": "_cls",
+    "prefix": "cls",
     "body": "className='$1'",
     "description": "Add className attribute for react"
   },
 
   "style": {
-    "prefix": "_sty",
+    "prefix": "sty",
     "body": "style={{$1}}",
     "description": "Add inline style attribute for react"
   }

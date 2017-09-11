@@ -9,7 +9,7 @@ import {
 } from './snippets'
 
 const {window, workspace, Position} = vscode
-const PREFIXABLE_FOLDERS = ['uis', 'pages', 'widgets', 'layouts', 'components']
+const PREFIXABLE_FOLDERS = ['uis', 'pages', 'page', 'widgets', 'widget', 'layouts', 'components']
 const DEFAULT_STYLE_FOLDER = 'styles'
 const DEFAULT_STYLE_EXTENSION = '.scss'
 
@@ -168,8 +168,9 @@ function makeSnippet(tpl, envData) {
 }
 
 function makeText(tpl, envData) {
-  return tpl.replace(/\$(\w+)/g, (_, key) => {
-    if (key in envData) return envData[key]
+  return tpl.replace(/\$(\w+)|\$\{(\w+)\}/g, (_, key1, key2) => {
+    if (key1 && (key1 in envData)) return envData[key1]
+    if (key2 && (key2 in envData)) return envData[key2]
     return _
   })
 }

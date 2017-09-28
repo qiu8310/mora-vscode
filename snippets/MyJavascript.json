@@ -4,16 +4,50 @@
     "body": "className",
     "description": "className abbr"
   },
-
   "className attribute": {
     "prefix": "cls",
     "body": "className='$1'",
     "description": "Add className attribute for react"
   },
-
   "style": {
     "prefix": "sty",
     "body": "style={{$1}}",
     "description": "Add inline style attribute for react"
+  },
+
+  "destractThis": {
+    "prefix": "dth",
+    "body": "const {$0} = this",
+    "description": "Destract this"
+  },
+  "destractComponentProps": {
+    "prefix": "dpr",
+    "body": "const {$0} = this.props",
+    "description": "Destract component's props"
+  },
+  "destractComponentState": {
+    "prefix": "dst",
+    "body": "const {$0} = this.state",
+    "description": "Destract component's state"
+  },
+  "componentSetStateObject": {
+    "prefix": "sst",
+    "body": "this.setState($0)",
+    "description": "Performs a shallow merge of nextState into current state"
+  },
+  "componentSetStateFunc": {
+    "prefix": "ssf",
+    "body": "this.setState((state, props) => { return { $0 }})\n",
+    "description": "Performs a shallow merge of nextState into current state"
+  },
+  "componentProps": {
+    "prefix": "props",
+    "body": "this.props.$0",
+    "description": "Access component's props"
+  },
+  "componentState": {
+    "prefix": "state",
+    "body": "this.state.$0",
+    "description": "Access component's state"
   }
 }

@@ -84,31 +84,6 @@
     "body": "render() {\n\treturn (\n\t\t<div>\n\t\t\t$0\n\t\t</div>\n\t)\n}",
     "description": "When called, it should examine this.props and this.state and return a single child element."
   },
-  "componentSetStateObject": {
-    "prefix": "sst",
-    "body": "this.setState($0)",
-    "description": "Performs a shallow merge of nextState into current state"
-  },
-  "componentSetStateFunc": {
-    "prefix": "ssf",
-    "body": "this.setState((state, props) => { return { $0 }})\n",
-    "description": "Performs a shallow merge of nextState into current state"
-  },
-  "componentProps": {
-    "prefix": "props",
-    "body": "this.props.$0",
-    "description": "Access component's props"
-  },
-  "componentState": {
-    "prefix": "state",
-    "body": "this.state.$0",
-    "description": "Access component's state"
-  },
-  "bindThis": {
-    "prefix": "bnd",
-    "body": "this.$1 = this.$1.bind(this)$0",
-    "description": "Binds the this of a method. To be used inside a constructor"
-  },
   "propTypes": {
     "prefix": "rpt",
     "body": "$1.propTypes = {\n\t$2\n}",

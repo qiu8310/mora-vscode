@@ -1,4 +1,9 @@
 {
+  "classConstructor": {
+    "prefix": "cons",
+    "body": "constructor() {\n\t$0\n}\n",
+    "description": "Adds a default constructor for the class"
+  },
   "import": {
     "prefix": "ipt",
     "body": "import ${2:moduleName} from '${1:module}'$0",

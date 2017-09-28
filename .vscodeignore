@@ -3,7 +3,9 @@
 out/test/**
 test/**
 src/**
+res/**
 **/*.map
 .gitignore
 tsconfig.json
 vsc-extension-quickstart.md
+yarn.lock

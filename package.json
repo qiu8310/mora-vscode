@@ -13,9 +13,8 @@
   "activationEvents": [
     "onLanguage:typescriptreact",
     "onLanguage:javascriptreact",
-    "onCommand:extension.createReactPureComponent",
-    "onCommand:extension.createReactListComponent",
-    "onCommand:extension.createReactComponentStyle"
+    "onCommand:extension.createScriptFile",
+    "onCommand:extension.createStyleFile"
   ],
   "main": "./out/src/extension",
   "contributes": {

@@ -8,8 +8,6 @@ import * as findup from 'mora-scripts/libs/fs/findup'
 const {window, workspace, Position} = vscode
 const TPL_VARABLE_REGEXP = /\$(\w+)|\$\{(\w+)\}/g
 const config = workspace.getConfiguration('mora-vscode')
-const styleFileFolder = config.get<string>('styleFileFolder')
-const styleFileExtension = config.get<string>('styleFileExtension')
 
 export function createScriptFile() {
   if (isRunnable()) {
@@ -27,7 +25,7 @@ export function createScriptFile() {
 
         let newFile = path.resolve(dirName, filepath)
         fs.ensureFileSync(newFile)
-        openFile(newFile, () => insertSnippet(getTemplate(path.extname(filepath)), getEnvData()))
+        openFile(newFile, () => insertSnippet(getTemplate(newFile), getEnvData()))
       }
 
       // 当前光标所在的行上引用了一个不存在的文件
@@ -50,29 +48,21 @@ export function createScriptFile() {
       if (!created) {
         window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径，无输入则在当前文件创建）'}).then(createFile)
       }
-    } else {
-      // 计算每个 extension 的文件数量，以次数最高的为准
-      let exts = fs.readdirSync(dirName).reduce((all, f) => {
-        let ext = path.extname(f)
-        if (!all[ext]) all[ext] = 0
-        all[ext]++
-        return all
-      }, {})
-
-      let ext = Object.keys(exts).reduce((res, ext) => {
-        return exts[ext] > exts[res] ? ext : res
-      })
-      insertSnippet(getTemplate(ext || '.tsx'), envData)
+    } else if (editor.document.fileName) {
+      insertSnippet(getTemplate(editor.document.fileName), envData)
     }
   }
 }
 
 export function createStyleFile() {
   if (isRunnable()) {
+    const styleFileFolder = config.get<string>('styleFileFolder')
+    const styleFileExtension = config.get<string>('styleFileExtension')
+
     const envData = getEnvData()
-    const {dirName, moduleName} = envData
+    const {dirName, baseName} = envData
     let styleDir = path.join(dirName, styleFileFolder)
-    let styleName = moduleName + styleFileExtension
+    let styleName = baseName + styleFileExtension
     let styleFile = path.join(styleDir, styleName)
     fs.ensureFileSync(styleFile)
 
@@ -113,17 +103,25 @@ export function createStyleFile() {
 
     openFile(styleFile, (doc, trimContent) => {
       if (!trimContent) {
-        insertSnippet(getTemplate(styleFileExtension), envData)
+        insertSnippet(getTemplate(styleFile), envData)
       }
     })
   }
 }
 
-function getTemplate(extension: string) {
-  extension = extension.replace(/^\./, '')
+function getTemplate(fileName: string) {
+  let extension = path.extname(fileName)
+  let tplFile = extension + '.tpl'
+
   try {
-    let file = findup.file(path.dirname(window.activeTextEditor.document.fileName), extension + '.tpl')
-    return fs.readFileSync(file).toString()
+    let tplDir = findup.dir(path.dirname(fileName), '.tpl')
+    let tplDirParent = path.dirname(tplDir)
+    let firstPath = fileName.replace(tplDirParent, '').substr(1).split('/').shift()
+    try {
+      return fs.readFileSync(path.join(tplDir, firstPath, tplFile)).toString()
+    } catch(e) {
+      return fs.readFileSync(path.join(tplDir, tplFile)).toString()
+    }
   } catch (e) {
     return ''
   }
@@ -172,8 +170,9 @@ function getEnvData() {
   let ucModuleName = baseName.toUpperCase()
   let ufModuleName = moduleName[0].toUpperCase() + moduleName.slice(1)
   let d = new Date()
-  let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('-')
-  let time = [d.getHours(), d.getMinutes()].join(':')
+  let pad = n => n < 10 ? '0' + n : n
+  let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
+  let time = [d.getHours(), d.getMinutes()].map(pad).join(':')
   let user = process.env.USER
 
   return {

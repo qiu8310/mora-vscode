@@ -62,7 +62,8 @@ export class ClassCompletion implements CompletionItemProvider {
 
   getCompletionItems(styles: string[], sortText: string): CompletionItem[] {
     return styles.map(s => {
-      let i = new CompletionItem(s.substr(1), CompletionItemKind.Variable)
+      let i = new CompletionItem(s.substr(1))
+      i.kind = CompletionItemKind.Variable
       i.sortText = sortText
       return i
     })

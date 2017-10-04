@@ -2,17 +2,19 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as os from 'os'
-import {camel, cap, upper, snake} from 'naming-transform'
+import * as minimatch from 'minimatch'
+import {camel, cap, upper, snake/*, kebab */} from 'naming-transform'
 import * as findup from 'mora-scripts/libs/fs/findup'
+import * as escapeRegExp from 'mora-scripts/libs/lang/escapeRegExp'
 
-const {window, workspace, Position} = vscode
+const {window, workspace} = vscode
 const TPL_VARABLE_REGEXP = /\$(\w+)|\$\{(\w+)\}/g
 const config = workspace.getConfiguration('mora-vscode')
 
 export function createScriptFile() {
   if (isRunnable()) {
     const envData = getEnvData()
-    const {dirName, extension, moduleName} = envData
+    const {dirName, extension} = envData
 
     let editor = window.activeTextEditor
     let content = editor.document.getText()
@@ -56,39 +58,36 @@ export function createScriptFile() {
 
 export function createStyleFile() {
   if (isRunnable()) {
-    const styleFileFolder = config.get<string>('styleFileFolder')
-    const styleFileExtension = config.get<string>('styleFileExtension')
-
     const envData = getEnvData()
-    const {dirName, baseName} = envData
-    let styleDir = path.join(dirName, styleFileFolder)
-    let styleName = baseName + styleFileExtension
-    let styleFile = path.join(styleDir, styleName)
+    const {dirName} = envData
+    const importStyleTemplate = config.get<string>('importStyleTemplate')
+    const importStyle = render(importStyleTemplate, envData)
+
+    const stylePathReg = /(['"])(.*?)\1/
+    if (!stylePathReg.test(importStyle)) {
+      return window.showErrorMessage('Can\'ot find style template in config `importStyleTemplate=' + JSON.stringify(importStyleTemplate) + '`')
+    }
+    let stylePath = RegExp.$2
+    let styleFile = path.resolve(dirName, stylePath)
     fs.ensureFileSync(styleFile)
 
     let editor = window.activeTextEditor
-    let style = `'./${styleFileFolder}/${styleName}'`
-    let styleRef1 = `import ${style}`
-    let styleRef2 = `require(${style}')`
-    let styleRef3 = `import * as style from ${style}`
-    let styleRef4 = `const style = require(${style})`
-    let styleRefs = [styleRef1, styleRef2, styleRef3, styleRef4]
 
     let isStyleRefExists = false
     let lastImportLineNumber = -1 // 文件中使用 import 的最后一行
 
     eachDocumentLine(editor.document, (line, lineNumber) => {
       let {text} = line
-      if (styleRefs.indexOf(text) >= 0) {
-        isStyleRefExists = true
-      } else if (text.substr(0, 3) === '// ' || styleRefs.indexOf(text.substr(3)) >= 0) {
+      if (text.indexOf(stylePath) >= 0) {
         isStyleRefExists = true
 
-        editor.edit(eb => {
-          let startPos = new vscode.Position(lineNumber, 0)
-          let endPos = new vscode.Position(lineNumber, 3)
-          eb.replace(new vscode.Range(startPos, endPos), '')
-        })
+      if (/^(\s*\/\/\s*)/.test(text)) {
+          editor.edit(eb => {
+            let startPos = new vscode.Position(lineNumber, 0)
+            let endPos = new vscode.Position(lineNumber, RegExp.$1.length)
+            eb.replace(new vscode.Range(startPos, endPos), '')
+          })
+        }
       }
 
       if (/^(import|(var|let|const)\s+\w+\s+=\s+require)\b/.test(text)) lastImportLineNumber = lineNumber
@@ -98,7 +97,7 @@ export function createStyleFile() {
 
     // 文件中没有引用样式引用的话，就手动添加引用
     if (!isStyleRefExists) {
-      editor.edit(eb => eb.insert(new vscode.Position(lastImportLineNumber + 1, 0), `${os.EOL}${styleRef1}${os.EOL}`))
+      editor.edit(eb => eb.insert(new vscode.Position(lastImportLineNumber + 1, 0), `${os.EOL}${importStyle}${os.EOL}`))
     }
 
     openFile(styleFile, (doc, trimContent) => {
@@ -110,21 +109,61 @@ export function createStyleFile() {
 }
 
 function getTemplate(fileName: string) {
-  let extension = path.extname(fileName)
-  let tplFile = extension + '.tpl'
+  let tplDir = config.get<string>('templateDirectory')
 
   try {
-    let tplDir = findup.dir(path.dirname(fileName), '.tpl')
-    let tplDirParent = path.dirname(tplDir)
-    let firstPath = fileName.replace(tplDirParent, '').substr(1).split('/').shift()
-    try {
-      return fs.readFileSync(path.join(tplDir, firstPath, tplFile)).toString()
-    } catch(e) {
-      return fs.readFileSync(path.join(tplDir, tplFile)).toString()
+    let findFromDir = path.dirname(fileName)
+    let content
+    while (typeof content !== 'string') {
+      let findTplDir = findup.dir(findFromDir, tplDir)
+      content = getTemplateFromDir(fileName, findTplDir)
+      if (!content) findFromDir = path.dirname(path.dirname(findTplDir))
     }
+    return content
   } catch (e) {
+    if (process.env.HOME) {
+      let homeTplDir = path.join(process.env.HOME, tplDir)
+      if (fs.existsSync(homeTplDir)) {
+        let content = getTemplateFromDir(fileName, homeTplDir)
+        return content || ''
+      }
+    }
     return ''
   }
+}
+
+function getTemplateFromDir(fileName: string, tplDir: string): boolean | string {
+  const tplExtension = config.get<string>('templateExtension')
+  const tplPathSep = config.get<string>('templatePathSeparator') || ':' // 防止用户设置成空
+  const minimatchOpts = config.get<any>('templateMinimatchOptions')
+
+  let tplNames = fs.readdirSync(tplDir).filter(f => !tplExtension || f.endsWith(tplExtension))
+  if (!tplNames.length) return false
+
+  const sepReg = new RegExp(escapeRegExp(tplPathSep), 'g')
+  const patternTplNames = tplNames
+    .map(n => n.substr(0, n.length - tplExtension.length)) // 去除后缀
+    .map(n => n.replace(sepReg, path.sep))  // 替换目录分隔符
+    .map(n => !n.startsWith('**') ? path.join('**', n) : n) // 添加 ** 前缀，匹配前面所有的目录
+
+  // 方便恢复原文件地址
+  const tplNameMap = patternTplNames.reduce((map, name, index) => {
+    map[name] = tplNames[index]
+    return map
+  }, {})
+
+  // 排序：路径多的优先匹配
+  const pathReg = /[\/\\]/g
+  const sortMap = patternTplNames.reduce((map, name) => {
+    map[name] = (name.match(pathReg) || []).length
+    return map
+  }, {})
+  patternTplNames.sort((a, b) => sortMap[b] - sortMap[a])
+
+  const foundTpl = patternTplNames.find(t => minimatch(fileName, t, minimatchOpts))
+  return foundTpl
+    ? fs.readFileSync(path.join(tplDir, tplNameMap[foundTpl])).toString()
+    : false
 }
 
 function openFile(file, cb: (doc: vscode.TextDocument, trimContent: string) => any) {
@@ -166,30 +205,32 @@ function getEnvData() {
   let extension = path.extname(fileName)
   let baseName = path.basename(fileName, extension)
 
-  let moduleName = baseName.replace(/_+(\w)/, (_, w) => w.toUpperCase())
-  let ucModuleName = baseName.toUpperCase()
-  let ufModuleName = moduleName[0].toUpperCase() + moduleName.slice(1)
   let d = new Date()
   let pad = n => n < 10 ? '0' + n : n
   let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
   let time = [d.getHours(), d.getMinutes()].map(pad).join(':')
-  let user = process.env.USER
+
+  let pkg = {}
+  try { pkg = require(path.join(rootPath, 'package.json')) } catch (e) { }
 
   return {
-    fileName, dirName, rootPath, extension,
-    date, time, datetime: date + ' ' + time,
-    user,
+    fileName,
+    dirName,
+    rootPath,
+    extension,
+    date,
+    time,
+    datetime: date + ' ' + time,
+    user: process.env.USER,
+    pkg,
 
-    // if:    baseName     = 'hello-world'
-    // then:  moduleName   = 'helloWorld'
-    //        ufModuleName = 'HelloWorld'   // upper first
-    //        ucModuleName = 'HELLO_WORLD'  // upper case
-    //        lcModuleName = 'hello_world'  // lower case
     baseName,
+    rawModuleName: baseName,
     moduleName: camel(baseName),
-    ufModuleName: cap(baseName),
-    ucModuleName: upper(baseName),
-    lcModuleName: snake(baseName),
+    ModuleName: cap(baseName),
+    MODULE_NAME: upper(baseName),
+    module_name: snake(baseName),
+    // 'module-name': kebab(baseName) // module-name 不能当变量名
   }
 }
 
@@ -198,10 +239,10 @@ function insertSnippet(tpl, envData, pos?: vscode.Position) {
 }
 
 function makeSnippet(tpl, envData) {
-  return new vscode.SnippetString(makeText(tpl, envData))
+  return new vscode.SnippetString(render(tpl, envData))
 }
 
-function makeText(tpl, envData) {
+function render(tpl, envData) {
   return tpl.replace(TPL_VARABLE_REGEXP, (_, key1, key2) => {
     if (key1 && (key1 in envData)) return envData[key1]
     if (key2 && (key2 in envData)) return envData[key2]

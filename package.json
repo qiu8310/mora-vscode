@@ -21,23 +21,44 @@
     "configuration": {
       "title": "mora-vscode",
       "properties": {
+        "mora-vscode.templatePathSeparator": {
+          "type": "string",
+          "default": ":",
+          "description": "path separator in template file name"
+        },
+        "mora-vscode.templateExtension": {
+          "type": "string",
+          "default": ".tpl",
+          "description": "template file's extension"
+        },
+        "mora-vscode.templateDirectory": {
+          "type": "string",
+          "default": ".tpl",
+          "description": "template directory which contains template files"
+        },
+        "mora-vscode.templateMinimatchOptions": {
+          "type": "object",
+          "default": {
+            "matchBase": true,
+            "nocomment": true,
+            "dot": true
+          },
+          "description": "minimatch options used in template name match, ref: https://github.com/isaacs/minimatch#options"
+        },
+
+        "mora-vscode.importStyleTemplate": {
+          "type": "string",
+          "default": "import './style/$rawModuleName.scss'",
+          "description": "style file import format, used for create local style file and add reference to current file"
+        },
+
         "mora-vscode.globalStyleFiles": {
           "type": "array",
           "default": [],
           "items": {
             "type": "string"
           },
-          "description": "global style files, used for auto completion in react file"
-        },
-        "mora-vscode.styleFileFolder": {
-          "type": "string",
-          "default": "style",
-          "description": "style file folder, used for create local style file"
-        },
-        "mora-vscode.styleFileExtension": {
-          "type": "string",
-          "default": ".scss",
-          "description": "style file extension"
+          "description": "global style files, used for className auto completion in react file"
         }
       }
     },
@@ -108,7 +129,7 @@
     "link": "ln -sf ~/Workspace/mora-vscode/ ~/.vscode/extensions/mora-vscode",
     "build": "tsc -p ./",
     "compile": "tsc -watch -p ./",
-    "__postinstall": "node ./node_modules/vscode/bin/install",
+    "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
@@ -120,8 +141,9 @@
     "vscode": "^1.0.0"
   },
   "dependencies": {
-    "fs-extra": "2.1.2",
-    "mora-scripts": "1.6.8",
-    "naming-transform": "0.1.0"
+    "fs-extra": "^4.0.0",
+    "minimatch": "^3.0.4",
+    "mora-scripts": "~1.6.8",
+    "naming-transform": "~0.1.0"
   }
 }

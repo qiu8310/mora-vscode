@@ -4,7 +4,9 @@ import {camel, cap, upper, snake/*, kebab */} from 'naming-transform'
 
 const {workspace, window} = vscode
 const TPL_VARABLE_REGEXP = /\$(\w+)|\$\{(\w+)\}/g
+let _isTsEnabled: boolean
 
+export const rootPath = workspace.rootPath || process.cwd()
 export const config = workspace.getConfiguration('mora-vscode')
 
 export interface IEnvData {
@@ -28,8 +30,6 @@ export interface IEnvData {
 }
 
 export function getEnvData(loadCustom: boolean = true): IEnvData {
-  const rootPath = workspace.rootPath || process.cwd()
-
   let d = new Date()
   let pad = n => n < 10 ? '0' + n : n
   let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
@@ -72,10 +72,27 @@ export function getEnvData(loadCustom: boolean = true): IEnvData {
 
   let custom
   if (loadCustom) {
-    custom = _getCustomEnvVariables(data)
+    custom = _getGlobalCustomEnvData(data)
   }
 
   return custom ? {...data, ...custom} : data
+}
+
+export function getCustomEnvDataFromFile(file: string): any {
+  const isTsFile = file.endsWith('.ts') || file.endsWith('.tsx')
+  if (isTsFile && !isTsEnabled()) {
+    window.showErrorMessage(`package "ts-node" is not installed, file ${file} can't compiled`)
+    return {}
+  }
+  try {
+    let r = require(file)
+    if (r && r.default) r = r.default
+    if (typeof r === 'function') r = r(vscode)
+    return r || {}
+  } catch (e) {
+    window.showErrorMessage(`Load custom variables from file ${file} error: ${e.message}`)
+    return {}
+  }
 }
 
 export function render(tpl: string, data: any): string {
@@ -86,34 +103,24 @@ export function render(tpl: string, data: any): string {
   })
 }
 
-function _getCustomEnvVariables(data: IEnvData): any {
-  const generateTemplateVariableFiles = config.get<string[]>('generateTemplateVariableFiles')
-  if (!generateTemplateVariableFiles.length) return
-
-  let isTsFile = f => f.endsWith('.ts') || f.endsWith('.tsx')
-  let tsEnabled = false
-  if (generateTemplateVariableFiles.find(isTsFile)) {
+function isTsEnabled() {
+  if (_isTsEnabled == null) {
     try {
-      require(data.npmPath + '/ts-node/register')
-      tsEnabled = true
+      const registerFile = path.join(rootPath, 'node_modules', 'ts-node', 'register')
+      require(registerFile)
+      _isTsEnabled = true
     } catch (e) {
-      window.showErrorMessage('can\'t find ts-node, so ts files in `generateTemplateVariableFiles` can not be compiled')
+      _isTsEnabled = false
     }
   }
+  return _isTsEnabled
+}
 
-  let {rootPath} = workspace
+function _getGlobalCustomEnvData(data: IEnvData): any {
+  const generateTemplateVariableFiles = config.get<string[]>('globalTemplateVariableFiles')
+  if (!generateTemplateVariableFiles.length) return
+
   return generateTemplateVariableFiles.reduce((all, file) => {
-    if (!isTsFile(file) || tsEnabled) {
-      try {
-        let r = require(path.resolve(rootPath, render(file, data)))
-        if (r && r.default) r = r.default
-
-        if (typeof r === 'function') r = r(vscode)
-        if (r && typeof r === 'object') all = {...all, ...r}
-      } catch (e) {
-        window.showErrorMessage('require file ' + file + ' error: ' + e.message)
-      }
-    }
-    return all
+    return {...data, ...getCustomEnvDataFromFile(path.resolve(rootPath, render(file, data)))}
   }, {})
 }

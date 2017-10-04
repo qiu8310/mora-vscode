@@ -5,7 +5,7 @@ import * as os from 'os'
 import * as minimatch from 'minimatch'
 import * as findup from 'mora-scripts/libs/fs/findup'
 import * as escapeRegExp from 'mora-scripts/libs/lang/escapeRegExp'
-import {getEnvData, render, config} from './helper'
+import {getEnvData, getCustomEnvDataFromFile, render, config, IEnvData} from './helper'
 
 const {window, workspace} = vscode
 
@@ -25,7 +25,7 @@ export function createScriptFile() {
 
         let newFile = path.resolve(dirName, filepath)
         fs.ensureFileSync(newFile)
-        openFile(newFile, () => insertSnippet(getTemplate(newFile), getEnvData()))
+        openFile(newFile, () => insertSnippet(getTemplate(newFile, envData)))
       }
 
       // 当前光标所在的行上引用了一个不存在的文件
@@ -49,7 +49,7 @@ export function createScriptFile() {
         window.showInputBox({placeHolder: '请输入要创建的文件名（相对当前文件的路径，无输入则在当前文件创建）'}).then(createFile)
       }
     } else if (editor.document.fileName) {
-      insertSnippet(getTemplate(editor.document.fileName), envData)
+      insertSnippet(getTemplate(editor.document.fileName, envData))
     }
   }
 }
@@ -100,13 +100,13 @@ export function createStyleFile() {
 
     openFile(styleFile, (doc, trimContent) => {
       if (!trimContent) {
-        insertSnippet(getTemplate(styleFile), envData)
+        insertSnippet(getTemplate(styleFile, envData))
       }
     })
   }
 }
 
-function getTemplate(fileName: string) {
+function getTemplate(fileName: string, envData: IEnvData): string {
   let tplDir = config.get<string>('templateDirectory')
 
   try {
@@ -114,7 +114,7 @@ function getTemplate(fileName: string) {
     let content
     while (typeof content !== 'string') {
       let findTplDir = findup.dir(findFromDir, tplDir)
-      content = getTemplateFromDir(fileName, findTplDir)
+      content = getTemplateFromDir(fileName, findTplDir, envData)
       if (!content) findFromDir = path.dirname(path.dirname(findTplDir))
     }
     return content
@@ -122,7 +122,7 @@ function getTemplate(fileName: string) {
     if (process.env.HOME) {
       let homeTplDir = path.join(process.env.HOME, tplDir)
       if (fs.existsSync(homeTplDir)) {
-        let content = getTemplateFromDir(fileName, homeTplDir)
+        let content = getTemplateFromDir(fileName, homeTplDir, envData)
         return content || ''
       }
     }
@@ -130,10 +130,11 @@ function getTemplate(fileName: string) {
   }
 }
 
-function getTemplateFromDir(fileName: string, tplDir: string): boolean | string {
+function getTemplateFromDir(fileName: string, tplDir: string, envData: IEnvData): false | string {
   const tplExtension = config.get<string>('templateExtension')
   const tplPathSep = config.get<string>('templatePathSeparator') || ':' // 防止用户设置成空
   const minimatchOpts = config.get<any>('templateMinimatchOptions')
+  const localVariableFileName = config.get<string>('localTemplateVariableFileName')
 
   let tplNames = fs.readdirSync(tplDir).filter(f => !tplExtension || f.endsWith(tplExtension))
   if (!tplNames.length) return false
@@ -159,9 +160,23 @@ function getTemplateFromDir(fileName: string, tplDir: string): boolean | string 
   patternTplNames.sort((a, b) => sortMap[b] - sortMap[a])
 
   const foundTpl = patternTplNames.find(t => minimatch(fileName, t, minimatchOpts))
-  return foundTpl
-    ? fs.readFileSync(path.join(tplDir, tplNameMap[foundTpl])).toString()
-    : false
+  if (foundTpl) {
+    const content = fs.readFileSync(path.join(tplDir, tplNameMap[foundTpl])).toString()
+
+    if (localVariableFileName) {
+      let detects = ['', '.json', '.js', '.ts']
+      let localFile = detects
+        .map(d => path.join(tplDir, localVariableFileName + d))
+        .find(f => fs.existsSync(f))
+      if (localFile) {
+        envData = {...envData, ...getCustomEnvDataFromFile(localFile)}
+      }
+    }
+
+    return content.trim() ? render(content, envData) : content
+  } else {
+    return false
+  }
 }
 
 function openFile(file, cb: (doc: vscode.TextDocument, trimContent: string) => any) {
@@ -195,11 +210,8 @@ function isRunnable() {
   return true
 }
 
-function insertSnippet(tpl, envData, pos?: vscode.Position) {
-  window.activeTextEditor.insertSnippet(makeSnippet(tpl, envData), pos)
+function insertSnippet(content: string, pos?: vscode.Position) {
+  window.activeTextEditor.insertSnippet(new vscode.SnippetString(content), pos)
 }
 
-function makeSnippet(tpl, envData) {
-  return new vscode.SnippetString(render(tpl, envData))
-}
 

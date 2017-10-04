@@ -45,13 +45,19 @@
           },
           "description": "minimatch options used in template name match, ref: https://github.com/isaacs/minimatch#options"
         },
-
+        "mora-vscode.generateTemplateVariableFiles": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "js files or ts(install `ts-node` first) files that generate custom template variables"
+        },
         "mora-vscode.importStyleTemplate": {
           "type": "string",
           "default": "import './style/$rawModuleName.scss'",
           "description": "style file import format, used for create local style file and add reference to current file"
         },
-
         "mora-vscode.globalStyleFiles": {
           "type": "array",
           "default": [],

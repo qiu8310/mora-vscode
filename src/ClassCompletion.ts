@@ -1,7 +1,7 @@
 import { CompletionItemProvider, TextDocument, Position, CompletionItem, workspace, Range, CompletionItemKind } from 'vscode';
 import * as fs from 'fs-extra'
 import * as path from 'path'
-
+import {getEnvData, render} from './helper'
 
 const jsxRegexp = /className=["|']([\w- ]*$)/
 const styleFileRegExp = /import\s+['"](.*?)['"]|require\(['"](.*?)['"]\)/
@@ -16,14 +16,8 @@ export class ClassCompletion implements CompletionItemProvider {
     this.config = this.normalizeConfig(workspace.getConfiguration('mora-vscode') as any)
   }
   normalizeConfig(config) {
-    let replace = (str) => {
-      let root = workspace.rootPath || __dirname
-      return str
-        .replace(/\$\{root\}/g, root)
-        .replace(/\$\{npm\}/g, path.join(root, 'node_modules'))
-    }
-
-    let globalStyleFiles = config.globalStyleFiles.map(replace)
+    let data = getEnvData(false)
+    let globalStyleFiles = config.globalStyleFiles.map(file => render(file, data))
     return {globalStyleFiles}
   }
 
@@ -105,7 +99,7 @@ export class ClassCompletion implements CompletionItemProvider {
 
       cache = {
         mtime: stat.mtime,
-        value: fileContent.match(styleRegexp)
+        value: fileContent.match(styleRegexp) || []
       }
 
       return cache.value

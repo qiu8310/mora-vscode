@@ -3,13 +3,11 @@ import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as os from 'os'
 import * as minimatch from 'minimatch'
-import {camel, cap, upper, snake/*, kebab */} from 'naming-transform'
 import * as findup from 'mora-scripts/libs/fs/findup'
 import * as escapeRegExp from 'mora-scripts/libs/lang/escapeRegExp'
+import {getEnvData, render, config} from './helper'
 
 const {window, workspace} = vscode
-const TPL_VARABLE_REGEXP = /\$(\w+)|\$\{(\w+)\}/g
-const config = workspace.getConfiguration('mora-vscode')
 
 export function createScriptFile() {
   if (isRunnable()) {
@@ -197,43 +195,6 @@ function isRunnable() {
   return true
 }
 
-function getEnvData() {
-  const {fileName} = window.activeTextEditor.document
-  const {rootPath} = workspace
-
-  let dirName = path.dirname(fileName)
-  let extension = path.extname(fileName)
-  let baseName = path.basename(fileName, extension)
-
-  let d = new Date()
-  let pad = n => n < 10 ? '0' + n : n
-  let date = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(pad).join('-')
-  let time = [d.getHours(), d.getMinutes()].map(pad).join(':')
-
-  let pkg = {}
-  try { pkg = require(path.join(rootPath, 'package.json')) } catch (e) { }
-
-  return {
-    fileName,
-    dirName,
-    rootPath,
-    extension,
-    date,
-    time,
-    datetime: date + ' ' + time,
-    user: process.env.USER,
-    pkg,
-
-    baseName,
-    rawModuleName: baseName,
-    moduleName: camel(baseName),
-    ModuleName: cap(baseName),
-    MODULE_NAME: upper(baseName),
-    module_name: snake(baseName),
-    // 'module-name': kebab(baseName) // module-name 不能当变量名
-  }
-}
-
 function insertSnippet(tpl, envData, pos?: vscode.Position) {
   window.activeTextEditor.insertSnippet(makeSnippet(tpl, envData), pos)
 }
@@ -242,10 +203,3 @@ function makeSnippet(tpl, envData) {
   return new vscode.SnippetString(render(tpl, envData))
 }
 
-function render(tpl, envData) {
-  return tpl.replace(TPL_VARABLE_REGEXP, (_, key1, key2) => {
-    if (key1 && (key1 in envData)) return envData[key1]
-    if (key2 && (key2 in envData)) return envData[key2]
-    return _
-  })
-}

@@ -49,5 +49,174 @@
     "prefix": "state",
     "body": "this.state.$0",
     "description": "Access component's state"
+  },
+
+
+
+
+  "afterAll": {
+    "prefix": "aa",
+    "body": "afterAll(() => {\n\t$0\n})",
+    "description": "afterAll function is called once after all specs"
+  },
+  "afterEach": {
+    "prefix": "ae",
+    "body": "afterEach(() => {\n\t$0\n})",
+    "description": "afterEach function is called once after each spec"
+  },
+  "beforeAll": {
+    "prefix": "ba",
+    "body": "beforeAll(() => {\n\t$0\n})",
+    "description": "beforeAll function is called once before all specs"
+  },
+  "beforeEach": {
+    "prefix": "be",
+    "body": "beforeEach(() => {\n\t$0\n})",
+    "description": "beforeEach function is called once before each spec"
+  },
+  "describe": {
+    "prefix": "desc",
+    "body": "describe('${1:Name of the group}', () => {\n\t$0\n})",
+    "description": "creates a describe block"
+  },
+  "test": {
+    "prefix": "test",
+    "body": "test('should ${1:behave...}', () => {\n\t$0\n})",
+    "description": "creates a test block"
+  },
+  "toBe": {
+    "prefix": "tb",
+    "body": "expect($1).toBe($2)$0",
+    "description": "expects the first argument to be equal with the second one"
+  },
+  "toBeCloseTo": {
+    "prefix": "tbct",
+    "body": "expect($1).toBeCloseTo(${2:number}, ${3:delta})$0",
+    "description": "expects the first argument to be close to the second one base on the delta"
+  },
+  "toBeDefined": {
+    "prefix": "tbd",
+    "body": "expect($1).toBeDefined()$0",
+    "description": "expects the argument is defined"
+  },
+  "toBeFalsy": {
+    "prefix": "tbf",
+    "body": "expect($1).toBeFalsy()$0",
+    "description": "expects the argument is falsy"
+  },
+  "toBeGreaterThan": {
+    "prefix": "tbgt",
+    "body": "expect($1).toBeGreaterThan($2)$0",
+    "description": "expects the argument is greater than or equal"
+  },
+  "toBeGreaterThanOrEqual": {
+    "prefix": "tbgte",
+    "body": "expect($1).toBeGreaterThanOrEqual($2)$0",
+    "description": "expects the argument is greater than"
+  },
+  "toBeInstanceOf": {
+    "prefix": "tbi",
+    "body": "expect($1).toBeInstanceOf($2)$0",
+    "description": "expects the argument is less than"
+  },
+  "toBeLessThan": {
+    "prefix": "tblt",
+    "body": "expect($1).toBeLessThan($2)$0",
+    "description": "expects the argument is less than"
+  },
+  "toBeLessThanOrEqual": {
+    "prefix": "tblte",
+    "body": "expect($1).toBeLessThan($2)$0",
+    "description": "expects the argument is less than or equal"
+  },
+  "toBeNull": {
+    "prefix": "tbn",
+    "body": "expect($1).toBeNull()$0",
+    "description": "expects the argument is null"
+  },
+  "toBeTruthy": {
+    "prefix": "tbt",
+    "body": "expect($1).toBeTruthy()$0",
+    "description": "expects the argument is truthy"
+  },
+  "toBeUndefined": {
+    "prefix": "tbu",
+    "body": "expect($1).toBeUndefined()$0",
+    "description": "expects the argument is undefined"
+  },
+  "toContain": {
+    "prefix": "tc",
+    "body": "expect(${1:list}).toContain(${2:item})$0",
+    "description": "expects the list contains the item (===)"
+  },
+  "toContainEqual": {
+    "prefix": "tce",
+    "body": "expect(${1:list}).toContainEqual(${2:item})$0",
+    "description": "expects the list contains the item (equals)"
+  },
+  "toEqual": {
+    "prefix": "te",
+    "body": "expect($1).toEqual($2)$0",
+    "description": "expects the first argument to be equal with the second one"
+  },
+  "toHaveBeenCalled": {
+    "prefix": "thbc",
+    "body": "expect($1).toHaveBeenCalled()$0",
+    "description": "returns true if the spy was called"
+  },
+  "toHaveBeenCalledTimes": {
+    "prefix": "thbct",
+    "body": "expect($1).toHaveBeenCalledTimes($2)$0",
+    "description": "returns true if the spy has been called given times"
+  },
+  "toHaveBeenCalledWith": {
+    "prefix": "thbcw",
+    "body": "expect($1).toHaveBeenCalledWith($2)$0",
+    "description": "returns true if the spy has been called with"
+  },
+  "toHaveBeenLastCalledWith": {
+    "prefix": "thblcw",
+    "body": "expect($1).toHaveBeenLastCalledWith($2)$0",
+    "description": "returns true if the spy has been last called with"
+  },
+  "toHaveLength": {
+    "prefix": "thl",
+    "body": "expect($1).toHaveLength($2)$0",
+    "description": "expects the object to have length"
+  },
+  "toHaveProperty": {
+    "prefix": "thp",
+    "body": "expect($1).toHaveProperty(${2:keyPath}, ${3:value})$0",
+    "description": "returns true if the argument matches the second object"
+  },
+  "toMatch": {
+    "prefix": "tm",
+    "body": "expect($1).toMatch($2)$0",
+    "description": "returns true if the argument matches the second value"
+  },
+  "toMatchObject": {
+    "prefix": "tmo",
+    "body": "expect($1).toMatchObject($2)$0",
+    "description": "returns true if the argument matches the second object"
+  },
+  "toMatchSnapshot": {
+    "prefix": "tms",
+    "body": "expect($1).toMatchSnapshot()$0",
+    "description": "returns true if the argument matches the most recent snapshot"
+  },
+  "toThrow": {
+    "prefix": "tt",
+    "body": "expect(() => {\n\t$0\n}).toThrow()",
+    "description": "expects that the method will throw"
+  },
+  "toThrowError": {
+    "prefix": "tte",
+    "body": "expect(() => {\n\t$0\n}).toThrowError($1)",
+    "description": "expects that the method will throw a specific error"
+  },
+  "toThrowErrorMatchingSnapshot": {
+    "prefix": "ttems",
+    "body": "expect(() => {\n\t$0\n}).toThrowErrorMatchingSnapshot()",
+    "description": "expects that the method will throw an error mathing the snapshpot"
   }
 }

@@ -49,9 +49,19 @@
     "body": "\ncomponentWillMount() {\n\t$0\n}\n",
     "description": "Invoked once, both on the client and server, immediately before the initial rendering occurs"
   },
+  "async componentWillMount": {
+    "prefix": "acwm",
+    "body": "\nasync componentWillMount() {\n\t$0\n}\n",
+    "description": "Invoked once, both on the client and server, immediately before the initial rendering occurs"
+  },
   "componentDidMount": {
     "prefix": "cdm",
     "body": "componentDidMount() {\n\t$0\n}\n",
+    "description": "Invoked once, only on the client (not on the server), immediately after the initial rendering occurs."
+  },
+  "async componentDidMount": {
+    "prefix": "acdm",
+    "body": "async componentDidMount() {\n\t$0\n}\n",
     "description": "Invoked once, only on the client (not on the server), immediately after the initial rendering occurs."
   },
   "componentDidCatch": {

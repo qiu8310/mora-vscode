@@ -12,57 +12,13 @@
   ],
   "activationEvents": [
     "onLanguage:typescriptreact",
-    "onLanguage:javascriptreact",
-    "onCommand:extension.createScriptFile",
-    "onCommand:extension.createStyleFile"
+    "onLanguage:javascriptreact"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "configuration": {
       "title": "mora-vscode",
       "properties": {
-        "mora-vscode.templatePathSeparator": {
-          "type": "string",
-          "default": ":",
-          "description": "path separator in template file name"
-        },
-        "mora-vscode.templateExtension": {
-          "type": "string",
-          "default": ".tpl",
-          "description": "template file's extension"
-        },
-        "mora-vscode.templateDirectory": {
-          "type": "string",
-          "default": ".tpl",
-          "description": "template directory which contains template files"
-        },
-        "mora-vscode.templateMinimatchOptions": {
-          "type": "object",
-          "default": {
-            "matchBase": true,
-            "nocomment": true,
-            "dot": true
-          },
-          "description": "minimatch options used in template name match, ref: https://github.com/isaacs/minimatch#options"
-        },
-        "mora-vscode.globalTemplateVariableFiles": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "js files or ts(install `ts-node` first) files that generate custom template variables"
-        },
-        "mora-vscode.localTemplateVariableFileName": {
-          "type": "string",
-          "default": "local",
-          "description": "local template variable file name without extension, support json, js and ts format"
-        },
-        "mora-vscode.importStyleTemplate": {
-          "type": "string",
-          "default": "import './style/$rawModuleName.scss'",
-          "description": "style file import format, used for create local style file and add reference to current file"
-        },
         "mora-vscode.globalStyleFiles": {
           "type": "array",
           "default": [],
@@ -73,26 +29,6 @@
         }
       }
     },
-    "commands": [
-      {
-        "command": "extension.createScriptFile",
-        "title": "Create Script File"
-      },
-      {
-        "command": "extension.createStyleFile",
-        "title": "Create Style File"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.createScriptFile",
-        "key": "cmd+k cmd+p"
-      },
-      {
-        "command": "extension.createStyleFile",
-        "key": "cmd+k cmd+s"
-      }
-    ],
     "snippets": [
       {
         "path": "./snippets/MyJavascript.json",

@@ -16,7 +16,7 @@ export class ClassCompletion implements CompletionItemProvider {
     this.config = this.normalizeConfig(workspace.getConfiguration('mora-vscode') as any)
   }
   normalizeConfig(config) {
-    let data = getEnvData(false)
+    let data = getEnvData()
     let globalStyleFiles = config.globalStyleFiles.map(file => render(file, data))
     return {globalStyleFiles}
   }

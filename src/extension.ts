@@ -2,7 +2,6 @@
 
 import * as vscode from 'vscode'
 // import {WordCounter, WordCounterController} from './WordCounter'
-import {createScriptFile, createStyleFile} from './createFileByTemplate'
 import {ClassCompletion} from './ClassCompletion'
 
 // this method is called when your extension is activated
@@ -11,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "mora-vscode" is now active!')
+  // console.log('Congratulations, your extension "mora-vscode" is now active!')
 
   let cc = new ClassCompletion()
   let classTriggerChars = ['"', '\'', ' ']
@@ -21,9 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     // new WordCounterController(new WordCounter()),
     // vscode.commands.registerCommand('extension.sayHello', () => vscode.window.showInformationMessage('Hello World!')),
     vscode.languages.registerCompletionItemProvider('typescriptreact', cc, ...classTriggerChars),
-    vscode.languages.registerCompletionItemProvider('javascriptreact', cc, ...classTriggerChars),
-    vscode.commands.registerCommand('extension.createScriptFile', createScriptFile),
-    vscode.commands.registerCommand('extension.createStyleFile', createStyleFile)
+    vscode.languages.registerCompletionItemProvider('javascriptreact', cc, ...classTriggerChars)
   )
 }
 
